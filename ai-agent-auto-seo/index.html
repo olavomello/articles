@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Auto SEO Expert: Autonomous AI SEO Agent — Olavo Mello</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink-navy: #1F2A37;
+      --soft-mint: #CFE7DF;
+      --light-teal: #E8F3F1;
+      --warm-beige: #F2E9DF;
+      --soft-gray: #E6E6E6;
+      --bg-white: #FFFFFF;
+      --accent-mint: #3B9B85;
+      --font-title: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-code: 'Fira Code', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #F8FAF9;
+      color: var(--ink-navy);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 1rem;
+    }
+
+    .carousel-wrapper {
+      width: 100%;
+      max-width: 1280px;
+      background: var(--bg-white);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(31, 42, 55, 0.08), 0 2px 6px rgba(31, 42, 55, 0.04);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--soft-gray);
+    }
+
+    /* Header */
+    .carousel-header {
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--light-teal);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-white);
+      gap: 1rem;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      min-width: 0;
+    }
+
+    .back-btn {
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ink-navy);
+      background: var(--light-teal);
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      border: 1px solid var(--soft-mint);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .back-btn:hover {
+      background: var(--ink-navy);
+      color: var(--bg-white);
+    }
+
+    .brand-title {
+      font-family: var(--font-title);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--ink-navy);
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .slide-counter {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ink-navy);
+      background: var(--light-teal);
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* Viewport & Slides */
+    .carousel-viewport {
+      position: relative;
+      width: 100%;
+      min-height: 600px;
+      overflow: hidden;
+      touch-action: pan-y;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      transform: translateX(20px);
+      padding: 2.5rem 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      background: var(--bg-white);
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+    }
+
+    .slide-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      z-index: 2;
+    }
+
+    .scene-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--accent-mint);
+      background: var(--light-teal);
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      width: fit-content;
+    }
+
+    .slide-title {
+      font-family: var(--font-title);
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      line-height: 1.15;
+      font-weight: 700;
+      color: var(--ink-navy);
+    }
+
+    .slide-subtitle {
+      font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+      color: #4B5563;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    .quote-box {
+      background: var(--light-teal);
+      border-left: 4px solid var(--accent-mint);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      font-family: var(--font-title);
+      font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+      font-style: italic;
+      color: var(--ink-navy);
+      line-height: 1.4;
+    }
+
+    .bullets-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .bullets-list li {
+      position: relative;
+      padding-left: 1.5rem;
+      font-size: clamp(0.85rem, 1.4vw, 0.95rem);
+      line-height: 1.5;
+      color: var(--ink-navy);
+    }
+
+    .bullets-list li::before {
+      content: '▲';
+      position: absolute;
+      left: 0;
+      top: 2px;
+      font-size: 0.65rem;
+      color: var(--accent-mint);
+    }
+
+    .code-snippet {
+      background: var(--ink-navy);
+      color: var(--soft-mint);
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      font-family: var(--font-code);
+      font-size: clamp(0.75rem, 1.3vw, 0.85rem);
+      line-height: 1.6;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Images */
+    .slide-image-container {
+      width: 100%;
+      height: 100%;
+      max-height: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--light-teal);
+      border-radius: 12px;
+      padding: 1rem;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--soft-mint);
+    }
+
+    .slide-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(31, 42, 55, 0.12);
+    }
+
+    /* Table Responsive Wrapper */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-top: 0.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--soft-mint);
+    }
+
+    .comparison-table {
+      width: 100%;
+      min-width: 320px;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .comparison-table th {
+      background: var(--light-teal);
+      color: var(--ink-navy);
+      font-family: var(--font-title);
+      font-size: 1.05rem;
+      padding: 0.65rem 0.85rem;
+      text-align: left;
+      border-bottom: 2px solid var(--soft-mint);
+    }
+
+    .comparison-table td {
+      padding: 0.6rem 0.85rem;
+      border-bottom: 1px solid var(--soft-gray);
+      color: var(--ink-navy);
+    }
+
+    .comparison-table tr:nth-child(even) {
+      background: #FAFDFD;
+    }
+
+    /* PDF Internal Action Button */
+    .pdf-action-wrapper {
+      margin-top: 0.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .btn-download-pdf {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--ink-navy);
+      color: var(--bg-white);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.75rem 1.4rem;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(31, 42, 55, 0.15);
+    }
+
+    .btn-download-pdf:hover {
+      background: var(--accent-mint);
+      transform: translateY(-2px);
+    }
+
+    .btn-download-secondary {
+      background: var(--bg-white);
+      color: var(--ink-navy);
+      border: 1.5px solid var(--ink-navy);
+      box-shadow: none;
+    }
+
+    .btn-download-secondary:hover {
+      background: var(--ink-navy);
+      color: var(--bg-white);
+    }
+
+    /* Footer Controls */
+    .carousel-footer {
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--light-teal);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-white);
+      gap: 1rem;
+    }
+
+    .author-link {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--ink-navy);
+      white-space: nowrap;
+    }
+
+    .linkedin-anchor {
+      color: #0A66C2;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .linkedin-anchor:hover {
+      text-decoration: underline;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn-nav {
+      background: var(--bg-white);
+      border: 1.5px solid var(--ink-navy);
+      color: var(--ink-navy);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+    }
+
+    .btn-nav:hover {
+      background: var(--ink-navy);
+      color: var(--bg-white);
+      transform: translateY(-2px);
+    }
+
+    .btn-nav:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .dots-container {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--soft-gray);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dot.active {
+      background: var(--ink-navy);
+      width: 24px;
+      border-radius: 5px;
+    }
+
+    /* ===================================================
+       RESPONSIVE MEDIA QUERIES (TABLETS & MOBILE PHONES)
+       =================================================== */
+
+    @media (max-width: 1024px) {
+      body {
+        padding: 0.75rem 0.5rem;
+      }
+
+      .carousel-viewport {
+        min-height: auto;
+      }
+
+      .slide {
+        position: relative;
+        top: auto;
+        left: auto;
+        width: 100%;
+        height: auto;
+        display: none;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1.5rem 1.25rem;
+        transform: none;
+      }
+
+      .slide.active {
+        display: flex;
+        flex-direction: column;
+        transform: none;
+      }
+
+      /* Re-order elements on mobile so image comes after title for natural reading */
+      .slide-content {
+        order: 1;
+      }
+
+      .slide-image-container {
+        order: 2;
+        max-height: 280px;
+        aspect-ratio: 16 / 9;
+      }
+
+      .carousel-header {
+        padding: 0.85rem 1.25rem;
+      }
+
+      .brand-title {
+        display: none; /* Hide long title on small screens to preserve space */
+      }
+
+      .carousel-footer {
+        flex-direction: column-reverse;
+        padding: 1rem 1.25rem;
+        gap: 1.25rem;
+      }
+
+      .author-link {
+        text-align: center;
+        white-space: normal;
+        font-size: 0.8rem;
+      }
+
+      .dots-container {
+        order: 2;
+      }
+
+      .nav-buttons {
+        order: 1;
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .btn-nav {
+        width: 48px;
+        height: 48px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .slide {
+        padding: 1.25rem 1rem;
+        gap: 1.25rem;
+      }
+
+      .slide-image-container {
+        max-height: 220px;
+        padding: 0.5rem;
+      }
+
+      .quote-box {
+        padding: 0.85rem 1rem;
+        font-size: 1.05rem;
+      }
+
+      .code-snippet {
+        font-size: 0.75rem;
+        padding: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="carousel-wrapper">
+    <!-- Header -->
+    <header class="carousel-header">
+      <div class="header-left">
+        <a href="../" class="back-btn">&#8592; Articles</a>
+        <div class="brand-title">Auto SEO Expert: Autonomous AI SEO Agent</div>
+      </div>
+      <div class="slide-counter" id="slideCounter">Scene 1 of 8</div>
+    </header>
+
+    <!-- Viewport -->
+    <div class="carousel-viewport" id="viewport">
+
+      <!-- Scene 01 -->
+      <div class="slide active" data-slide="1">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 01 • Introduction</span>
+          <h1 class="slide-title">Auto SEO Expert</h1>
+          <p class="slide-subtitle">An autonomous AI agent that audits, scores, and prioritizes a website's SEO health end to end.</p>
+          <div class="quote-box">
+            "Give the user a clear understanding of how well their website is optimized for search engines, identify what is wrong, prioritize what should be fixed, and provide actionable recommendations — without requiring the user to understand SEO."
+          </div>
+          <ul class="bullets-list">
+            <li><strong>Two implementations, one methodology:</strong> ChatGPT GPT and Claude Skill.</li>
+            <li>Behaves as a senior SEO expert, not a generic chatbot.</li>
+            <li>Independently discovers, crawls, analyzes, scores, and reports.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/01-cover.png" alt="Auto SEO Expert Cover" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 02 -->
+      <div class="slide" data-slide="2">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 02 • Core Philosophy</span>
+          <h1 class="slide-title">Five Principles Drive Every Audit</h1>
+          <p class="slide-subtitle">The agent is built to work more than it talks.</p>
+          <ul class="bullets-list">
+            <li><strong>Automatic:</strong> do as much as possible without repeatedly asking the user.</li>
+            <li><strong>Objective:</strong> reports focus on findings, scores, and priorities.</li>
+            <li><strong>Visual:</strong> the user always sees the analysis progressing.</li>
+            <li><strong>Comprehensive:</strong> the entire internal website, not only the homepage.</li>
+            <li><strong>Actionable:</strong> every important problem gets a practical recommendation.</li>
+          </ul>
+          <div class="quote-box">
+            The user needs visibility, not narration.
+          </div>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/02-core-philosophy.png" alt="Core Philosophy" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 03 -->
+      <div class="slide" data-slide="3">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 03 • Minimal Onboarding</span>
+          <h1 class="slide-title">Confirm the Language, Ask Only What's Essential</h1>
+          <p class="slide-subtitle">The first interaction confirms the language, then asks for just two things.</p>
+          <div class="code-snippet">This audit runs in English by default.
+Continue in English, or switch language?
+
+Site:
+Target region:</div>
+          <ul class="bullets-list">
+            <li>Every subsequent message follows the language the user chooses.</li>
+            <li>Only two required inputs: the site and its target region.</li>
+            <li>Target keywords are discovered automatically — never requested upfront.</li>
+            <li>Optional context (keywords, competitors, Search Console, Analytics) only when it materially improves the analysis.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/03-minimal-onboarding.png" alt="Minimal Onboarding" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 04 -->
+      <div class="slide" data-slide="4">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 04 • The Audit Pipeline</span>
+          <h1 class="slide-title">A 22-Stage Pipeline, Fully Visible</h1>
+          <p class="slide-subtitle">The user always knows what's being analyzed, what's done, and what's left.</p>
+          <div class="code-snippet">AUTO SEO ANALYSIS
+████████████░░░░░░░░ 60%
+✓ Website discovery
+✓ robots.txt
+✓ Sitemap
+✓ Internal crawl
+✓ Metadata
+→ Analyzing images</div>
+          <ul class="bullets-list">
+            <li>From website discovery and robots.txt to scoring, root cause analysis, and the final report.</li>
+            <li>Crawls the entire site recursively — never limited to the homepage or nav menu.</li>
+            <li>Excludes external domains from the crawl scope; reports them separately.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/04-analysis-pipeline.png" alt="Audit Pipeline" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 05 -->
+      <div class="slide" data-slide="5">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 05 • Technical & On-Page SEO</span>
+          <h1 class="slide-title">Technical & On-Page Auditing</h1>
+          <p class="slide-subtitle">Every crawled page is inspected — titles, headings, images, links, canonicals, performance.</p>
+          <ul class="bullets-list">
+            <li>robots.txt, sitemap.xml, crawlability, and indexability checked explicitly.</li>
+            <li>Titles, meta descriptions, headings, and content evaluated for relevance and duplication.</li>
+            <li>Images, internal linking, broken links, and canonical consistency analyzed at scale.</li>
+            <li>Performance measured where possible — TTFB, LCP, CLS, INP — never invented.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/05-technical-auditing.png" alt="Technical Auditing" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 06 -->
+      <div class="slide" data-slide="6">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 06 • AI Search Readiness</span>
+          <h1 class="slide-title">Preparing Sites for AI-Powered Search</h1>
+          <p class="slide-subtitle">Beyond Google rankings — clarity for ChatGPT, Claude, Perplexity, and Gemini.</p>
+          <ul class="bullets-list">
+            <li>Evaluates clear entities, structured content, and explicit answers.</li>
+            <li>Checks structured data, author and organization information, and factual consistency.</li>
+            <li>E-E-A-T signals reviewed as trust indicators, never as a direct ranking score.</li>
+          </ul>
+          <div class="quote-box">
+            This category should not pretend to measure AI search rankings directly — it is an architectural and content quality assessment.
+          </div>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/06-ai-search-readiness.png" alt="AI Search Readiness" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 07 -->
+      <div class="slide" data-slide="7">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 07 • Scoring & Priorities</span>
+          <h1 class="slide-title">A Weighted Score From 0 to 100</h1>
+          <p class="slide-subtitle">Every category is scored, weighted, and translated into a prioritized action plan.</p>
+
+          <div class="table-responsive">
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Weight</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Technical SEO</td>
+                  <td>20%</td>
+                </tr>
+                <tr>
+                  <td>Crawlability & Indexability</td>
+                  <td>15%</td>
+                </tr>
+                <tr>
+                  <td>On-Page SEO</td>
+                  <td>15%</td>
+                </tr>
+                <tr>
+                  <td>Content Quality</td>
+                  <td>15%</td>
+                </tr>
+                <tr>
+                  <td>Internal Linking / Performance</td>
+                  <td>10% each</td>
+                </tr>
+                <tr>
+                  <td>Image SEO / Structured Data</td>
+                  <td>5% each</td>
+                </tr>
+                <tr>
+                  <td>Local SEO / AI Search Readiness</td>
+                  <td>3% / 2%</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <ul class="bullets-list">
+            <li>Findings are ranked Critical, High, Medium, Low, and Opportunity — never dumped without priority.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/07-scoring-and-prioritization.png" alt="Scoring & Prioritization" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 08 -->
+      <div class="slide" data-slide="8">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 08 • The Bigger Picture</span>
+          <h1 class="slide-title">Less Conversation. More SEO Intelligence.</h1>
+          <p class="slide-subtitle">From manual audits to a continuous, autonomous optimization loop.</p>
+          <div class="quote-box">
+            The agent should operate as a senior SEO professional who can independently inspect a website, understand its architecture, identify problems, quantify SEO health, prioritize the work, and present the result clearly.
+          </div>
+          <ul class="bullets-list">
+            <li>Where is this website today? What's holding it back? What should be fixed first?</li>
+            <li><strong>Read → Analyze → Score → Prioritize → Report</strong> — never modify, delete, or publish without explicit authorization.</li>
+          </ul>
+
+          <div class="pdf-action-wrapper">
+            <a href="presentation.pdf" target="_blank" class="btn-download-pdf">
+              📄 Download PDF Presentation
+            </a>
+            <a href="AGENT_AUTO_SEO.md" target="_blank" class="btn-download-pdf btn-download-secondary">
+              🤖 Download Agent Prompt (.md)
+            </a>
+          </div>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/08-conclusion-future.png" alt="Conclusion" class="slide-image">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer Controls -->
+    <footer class="carousel-footer">
+      <div class="author-link">
+        Created by <a href="https://www.linkedin.com/in/olavo-mello/" target="_blank" class="linkedin-anchor">Olavo Mello</a> - <a href="https://www.linkedin.com/in/olavo-mello/" target="_blank" class="linkedin-anchor">linkedin.com/in/olavo-mello/</a>
+      </div>
+
+      <div class="dots-container" id="dotsContainer">
+        <div class="dot active" data-slide="1"></div>
+        <div class="dot" data-slide="2"></div>
+        <div class="dot" data-slide="3"></div>
+        <div class="dot" data-slide="4"></div>
+        <div class="dot" data-slide="5"></div>
+        <div class="dot" data-slide="6"></div>
+        <div class="dot" data-slide="7"></div>
+        <div class="dot" data-slide="8"></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn-nav" id="prevBtn" disabled aria-label="Previous Slide">&#8592;</button>
+        <button class="btn-nav" id="nextBtn" aria-label="Next Slide">&#8594;</button>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const slideCounter = document.getElementById('slideCounter');
+    const viewport = document.getElementById('viewport');
+    let currentSlide = 1;
+    const totalSlides = slides.length;
+
+    function updateCarousel(slideIndex) {
+      slides.forEach(slide => {
+        slide.classList.remove('active');
+        if (parseInt(slide.getAttribute('data-slide')) === slideIndex) {
+          slide.classList.add('active');
+        }
+      });
+
+      dots.forEach(dot => {
+        dot.classList.remove('active');
+        if (parseInt(dot.getAttribute('data-slide')) === slideIndex) {
+          dot.classList.add('active');
+        }
+      });
+
+      slideCounter.textContent = `Scene ${slideIndex} of ${totalSlides}`;
+      prevBtn.disabled = slideIndex === 1;
+      nextBtn.disabled = slideIndex === totalSlides;
+
+      // Scroll slide to top on slide change on mobile
+      const activeSlide = document.querySelector('.slide.active');
+      if (activeSlide) {
+        activeSlide.scrollTop = 0;
+      }
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateCarousel(currentSlide);
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateCarousel(currentSlide);
+      }
+    });
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', (e) => {
+        const slideIndex = parseInt(e.target.getAttribute('data-slide'));
+        currentSlide = slideIndex;
+        updateCarousel(currentSlide);
+      });
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && currentSlide > 1) {
+        currentSlide--;
+        updateCarousel(currentSlide);
+      } else if (e.key === 'ArrowRight' && currentSlide < totalSlides) {
+        currentSlide++;
+        updateCarousel(currentSlide);
+      }
+    });
+
+    // Touch Swipe Gesture Support for Mobile Devices
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    viewport.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    viewport.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+      const swipeDistance = touchEndX - touchStartX;
+      const minSwipeDistance = 50; // Minimum px threshold for swipe
+
+      if (swipeDistance < -minSwipeDistance && currentSlide < totalSlides) {
+        // Swiped Left -> Next Slide
+        currentSlide++;
+        updateCarousel(currentSlide);
+      } else if (swipeDistance > minSwipeDistance && currentSlide > 1) {
+        // Swiped Right -> Previous Slide
+        currentSlide--;
+        updateCarousel(currentSlide);
+      }
+    }
+  </script>
+</body>
+</html>
