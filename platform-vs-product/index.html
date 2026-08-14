@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Platform Engineer vs Product Engineer — Editorial Presentation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink-navy: #1F2A37;
+      --soft-mint: #CFE7DF;
+      --light-teal: #E8F3F1;
+      --warm-beige: #F2E9DF;
+      --soft-gray: #E6E6E6;
+      --bg-white: #FFFFFF;
+      --accent-mint: #3B9B85;
+      --font-title: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-code: 'Fira Code', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #F8FAF9;
+      color: var(--ink-navy);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .carousel-wrapper {
+      width: 100%;
+      max-width: 1280px;
+      background: var(--bg-white);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(31, 42, 55, 0.08), 0 2px 6px rgba(31, 42, 55, 0.04);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--soft-gray);
+    }
+
+    .carousel-header {
+      padding: 1.25rem 2.5rem;
+      border-bottom: 1px solid var(--light-teal);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-white);
+    }
+
+    .brand-title {
+      font-family: var(--font-title);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--ink-navy);
+      letter-spacing: 0.5px;
+    }
+
+    .slide-counter {
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--ink-navy);
+      background: var(--light-teal);
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+    }
+
+    .carousel-viewport {
+      position: relative;
+      width: 100%;
+      min-height: 640px;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      transform: translateX(20px);
+      padding: 2.5rem 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      background: var(--bg-white);
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+    }
+
+    .slide-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      z-index: 2;
+    }
+
+    .scene-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--accent-mint);
+      background: var(--light-teal);
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      width: fit-content;
+    }
+
+    .slide-title {
+      font-family: var(--font-title);
+      font-size: 2.3rem;
+      line-height: 1.15;
+      font-weight: 700;
+      color: var(--ink-navy);
+    }
+
+    .slide-subtitle {
+      font-size: 1.05rem;
+      color: #4B5563;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    .quote-box {
+      background: var(--light-teal);
+      border-left: 4px solid var(--accent-mint);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      font-family: var(--font-title);
+      font-size: 1.2rem;
+      font-style: italic;
+      color: var(--ink-navy);
+      line-height: 1.4;
+    }
+
+    .bullets-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .bullets-list li {
+      position: relative;
+      padding-left: 1.5rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: var(--ink-navy);
+    }
+
+    .bullets-list li::before {
+      content: '▲';
+      position: absolute;
+      left: 0;
+      top: 2px;
+      font-size: 0.65rem;
+      color: var(--accent-mint);
+    }
+
+    .code-snippet {
+      background: var(--ink-navy);
+      color: var(--soft-mint);
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      font-family: var(--font-code);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+      overflow-x: auto;
+    }
+
+    .slide-image-container {
+      width: 100%;
+      height: 100%;
+      max-height: 520px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--light-teal);
+      border-radius: 12px;
+      padding: 1rem;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--soft-mint);
+    }
+
+    .slide-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(31, 42, 55, 0.12);
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+
+    .comparison-table th {
+      background: var(--light-teal);
+      color: var(--ink-navy);
+      font-family: var(--font-title);
+      font-size: 1.05rem;
+      padding: 0.6rem 0.8rem;
+      text-align: left;
+      border-bottom: 2px solid var(--soft-mint);
+    }
+
+    .comparison-table td {
+      padding: 0.55rem 0.8rem;
+      border-bottom: 1px solid var(--soft-gray);
+      color: var(--ink-navy);
+    }
+
+    .comparison-table tr:nth-child(even) {
+      background: #FAFDFD;
+    }
+
+    /* Footer Controls */
+    .carousel-footer {
+      padding: 1.25rem 2.5rem;
+      border-top: 1px solid var(--light-teal);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-white);
+    }
+
+    .author-link {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--ink-navy);
+    }
+
+    .linkedin-anchor {
+      color: #0A66C2;
+      text-decoration: none;
+      font-weight: 600;
+      transition: border-bottom 0.2s ease;
+      border-bottom: 1px solid transparent;
+    }
+
+    .linkedin-anchor:hover {
+      border-bottom-color: #0A66C2;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn-nav {
+      background: var(--bg-white);
+      border: 1.5px solid var(--ink-navy);
+      color: var(--ink-navy);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-nav:hover {
+      background: var(--ink-navy);
+      color: var(--bg-white);
+      transform: translateY(-2px);
+    }
+
+    .btn-nav:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .dots-container {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--soft-gray);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dot.active {
+      background: var(--ink-navy);
+      width: 28px;
+      border-radius: 6px;
+    }
+
+    @media (max-width: 900px) {
+      .slide {
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
+        gap: 1.5rem;
+        overflow-y: auto;
+      }
+      .slide-image-container {
+        max-height: 300px;
+      }
+      .slide-title {
+        font-size: 1.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="carousel-wrapper">
+    <!-- Header -->
+    <header class="carousel-header">
+      <div class="brand-title">Platform Engineer vs Product Engineer</div>
+      <div class="slide-counter" id="slideCounter">Scene 1 of 8</div>
+    </header>
+
+    <!-- Viewport -->
+    <div class="carousel-viewport" id="viewport">
+
+      <!-- Scene 01 -->
+      <div class="slide active" data-slide="1">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 01 • Introduction</span>
+          <h1 class="slide-title">Platform Engineer vs Product Engineer</h1>
+          <p class="slide-subtitle">Where software engineering is heading in the age of AI and platform ecosystems.</p>
+          <div class="quote-box">
+            "Product Engineers build what the business sells. Platform Engineers build what engineers need to build, ship, and operate it."
+          </div>
+          <ul class="bullets-list">
+            <li><strong>Two vital layers</strong> of the modern engineering ecosystem.</li>
+            <li><strong>Different optimizations:</strong> Customer value vs. Engineering leverage.</li>
+            <li><strong>AI Acceleration:</strong> Why platforms are becoming the safety governance layer for AI agents.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/01-cover.png" alt="Cover Illustration" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 02 -->
+      <div class="slide" data-slide="2">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 02 • Customer Focus</span>
+          <h1 class="slide-title">Product Engineering: Building for Users</h1>
+          <p class="slide-subtitle">Connecting human needs, business logic, UX, and software execution.</p>
+          <ul class="bullets-list">
+            <li><strong>Primary Customer:</strong> End users and business stakeholders.</li>
+            <li><strong>Product Thinking:</strong> Asking "Are we solving the right problem?" rather than just implementing tickets.</li>
+            <li><strong>Scope:</strong> UIs, APIs, Auth, Payments, DB models, Business rules, Analytics, Performance.</li>
+          </ul>
+          <div class="quote-box">
+            A technically perfect feature that nobody needs is still a failure.
+          </div>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/02-product-engineering.png" alt="Product Engineering" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 03 -->
+      <div class="slide" data-slide="3">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 03 • Engineering Leverage</span>
+          <h1 class="slide-title">Platform Engineering: System Behind the System</h1>
+          <p class="slide-subtitle">Engineered complexity removal from the developer experience (DevEx).</p>
+          <div class="code-snippet">
+$ platform create service payments-api
+✓ Repository & CI/CD Pipeline created
+✓ Staging & Production Cloud environments ready
+✓ Secrets, Observability & Alerts configured
+          </div>
+          <ul class="bullets-list">
+            <li>Abstracts Kubernetes, Terraform, IAM, Security, and Monitoring.</li>
+            <li>Reduces cognitive load so teams focus on product value.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/03-platform-engineering.png" alt="Platform Engineering" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 04 -->
+      <div class="slide" data-slide="4">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 04 • Metaphor & DevEx</span>
+          <h1 class="slide-title">The Kitchen Analogy & Golden Paths</h1>
+          <p class="slide-subtitle">Product Engineers are the chefs; Platform Engineers build the kitchen.</p>
+          <div class="quote-box">
+            "The customer cares about the food, not the oven model. But a poorly designed kitchen blocks the chef from creating great dishes."
+          </div>
+          <div class="code-snippet">
+GOLDEN PATH WORKFLOW:
+Create Service → Choose Runtime → Generate Repo → Provision Infra → Configure Security → Deploy
+          </div>
+          <ul class="bullets-list">
+            <li><strong>Golden Paths:</strong> Providing the easiest, safest, and most supported way to ship common software.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/04-kitchen-analogy.png" alt="Kitchen Metaphor" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 05 -->
+      <div class="slide" data-slide="5">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 05 • Comparison</span>
+          <h1 class="slide-title">Role Comparison Matrix</h1>
+          <p class="slide-subtitle">Same technologies (AWS, Docker, K8s, Go, TS, Terraform)—different optimization targets.</p>
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Area</th>
+                <th>Product Engineer</th>
+                <th>Platform Engineer</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Customer</strong></td>
+                <td>End users</td>
+                <td>Developers</td>
+              </tr>
+              <tr>
+                <td><strong>Objective</strong></td>
+                <td>Product Value</td>
+                <td>Engineering Leverage</td>
+              </tr>
+              <tr>
+                <td><strong>CI/CD</strong></td>
+                <td>Uses pipelines</td>
+                <td>Builds pipeline ecosystem</td>
+              </tr>
+              <tr>
+                <td><strong>Main Concern</strong></td>
+                <td>User Experience (UX)</td>
+                <td>Developer Experience (DevEx)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/05-comparison.png" alt="Role Comparison" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 06 -->
+      <div class="slide" data-slide="6">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 06 • AI Integration</span>
+          <h1 class="slide-title">AI & Platform Governance</h1>
+          <p class="slide-subtitle">The more software AI generates, the more important the platform becomes.</p>
+          <div class="code-snippet">
+AI AGENT → PLATFORM APIs:
+create_service() | deploy_service() | rotate_secret() | get_metrics()
+          </div>
+          <ul class="bullets-list">
+            <li><strong>Safe Abstractions:</strong> Exposing policy-driven, safe capabilities to AI agents instead of raw cloud credentials.</li>
+            <li>Enforces security, budget boundaries, IAM identity, and audit logs for autonomous AI operations.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/06-ai-and-platform.png" alt="AI Governance" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 07 -->
+      <div class="slide" data-slide="7">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 07 • Nuance Strategy</span>
+          <h1 class="slide-title">An Additional Nuance: Adoption Timing</h1>
+          <p class="slide-subtitle">When should you build a dedicated platform team? (Startups vs. Scaling Companies)</p>
+          <ul class="bullets-list">
+            <li><strong>Early-Stage Startups:</strong> Building a platform team too early creates <em>overengineering</em>. Product Engineers handle initial infrastructure.</li>
+            <li><strong>Scaling Companies:</strong> As the org grows across multiple teams, the lack of Platform as a Product leads to 30 teams reinventing the wheel 30 times.</li>
+          </ul>
+          <div class="quote-box">
+            Knowing the exact moment to transition between early agility and scale platform is the strategic differentiator of technical leadership.
+          </div>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/04-kitchen-analogy.png" alt="Adoption Timing Nuance" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 08 -->
+      <div class="slide" data-slide="8">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 08 • The Future</span>
+          <h1 class="slide-title">The Autonomous System</h1>
+          <p class="slide-subtitle">Where software engineering is heading next.</p>
+          <div class="quote-box">
+            Human → AI Agent → Developer Platform → Policy → Cloud → Application → Observability → Feedback ↺
+          </div>
+          <ul class="bullets-list">
+            <li><strong>Value Shift:</strong> Less valuable for typing raw code, more valuable for system design & product value.</li>
+            <li><strong>Convergence:</strong> Engineers designing platforms where humans and AI agents build, deploy, and operate software at scale.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/07-new-stack-conclusion.png" alt="Autonomous Stack" class="slide-image">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer Controls -->
+    <footer class="carousel-footer">
+      <div class="author-link">
+        Created by <a href="https://www.linkedin.com/in/olavo-mello/" target="_blank" class="linkedin-anchor">Olavo Mello</a> - <a href="https://www.linkedin.com/in/olavo-mello/" target="_blank" class="linkedin-anchor">linkedin.com/in/olavo-mello/</a>
+      </div>
+
+      <div class="dots-container" id="dotsContainer">
+        <div class="dot active" data-slide="1"></div>
+        <div class="dot" data-slide="2"></div>
+        <div class="dot" data-slide="3"></div>
+        <div class="dot" data-slide="4"></div>
+        <div class="dot" data-slide="5"></div>
+        <div class="dot" data-slide="6"></div>
+        <div class="dot" data-slide="7"></div>
+        <div class="dot" data-slide="8"></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn-nav" id="prevBtn" disabled>&#8592;</button>
+        <button class="btn-nav" id="nextBtn">&#8594;</button>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const slideCounter = document.getElementById('slideCounter');
+    let currentSlide = 1;
+    const totalSlides = slides.length;
+
+    function updateCarousel(slideIndex) {
+      slides.forEach(slide => {
+        slide.classList.remove('active');
+        if (parseInt(slide.getAttribute('data-slide')) === slideIndex) {
+          slide.classList.add('active');
+        }
+      });
+
+      dots.forEach(dot => {
+        dot.classList.remove('active');
+        if (parseInt(dot.getAttribute('data-slide')) === slideIndex) {
+          dot.classList.add('active');
+        }
+      });
+
+      slideCounter.textContent = `Scene ${slideIndex} of ${totalSlides}`;
+      prevBtn.disabled = slideIndex === 1;
+      nextBtn.disabled = slideIndex === totalSlides;
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateCarousel(currentSlide);
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateCarousel(currentSlide);
+      }
+    });
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', (e) => {
+        const slideIndex = parseInt(e.target.getAttribute('data-slide'));
+        currentSlide = slideIndex;
+        updateCarousel(currentSlide);
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && currentSlide > 1) {
+        currentSlide--;
+        updateCarousel(currentSlide);
+      } else if (e.key === 'ArrowRight' && currentSlide < totalSlides) {
+        currentSlide++;
+        updateCarousel(currentSlide);
+      }
+    });
+  </script>
+</body>
+</html>
