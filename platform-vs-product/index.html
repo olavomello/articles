@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Platform Engineer vs Product Engineer — Editorial Presentation</title>
+  <title>Platform Engineer vs Product Engineer — Olavo Mello</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --ink-navy: #1F2A37;
@@ -58,6 +58,29 @@
       justify-content: space-between;
       align-items: center;
       background: var(--bg-white);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .back-btn {
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--ink-navy);
+      background: var(--light-teal);
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      border: 1px solid var(--soft-mint);
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background: var(--ink-navy);
+      color: var(--bg-white);
     }
 
     .brand-title {
@@ -244,6 +267,31 @@
       background: #FAFDFD;
     }
 
+    /* PDF Internal Action Button */
+    .pdf-action-wrapper {
+      margin-top: 0.75rem;
+    }
+
+    .btn-download-pdf {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--ink-navy);
+      color: var(--bg-white);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.75rem 1.4rem;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(31, 42, 55, 0.15);
+    }
+
+    .btn-download-pdf:hover {
+      background: var(--accent-mint);
+      transform: translateY(-2px);
+    }
+
     /* Footer Controls */
     .carousel-footer {
       padding: 1.25rem 2.5rem;
@@ -345,7 +393,10 @@
   <div class="carousel-wrapper">
     <!-- Header -->
     <header class="carousel-header">
-      <div class="brand-title">Platform Engineer vs Product Engineer</div>
+      <div class="header-left">
+        <a href="../" class="back-btn">&#8592; Articles</a>
+        <div class="brand-title">Platform Engineer vs Product Engineer</div>
+      </div>
       <div class="slide-counter" id="slideCounter">Scene 1 of 8</div>
     </header>
 
@@ -518,7 +569,7 @@ create_service() | deploy_service() | rotate_secret() | get_metrics()
         </div>
       </div>
 
-      <!-- Scene 08 -->
+      <!-- Scene 08 (FINAL CONCLUSION SLIDE WITH PDF DOWNLOAD BUTTON) -->
       <div class="slide" data-slide="8">
         <div class="slide-content">
           <span class="scene-tag">Scene 08 • The Future</span>
@@ -531,6 +582,12 @@ create_service() | deploy_service() | rotate_secret() | get_metrics()
             <li><strong>Value Shift:</strong> Less valuable for typing raw code, more valuable for system design & product value.</li>
             <li><strong>Convergence:</strong> Engineers designing platforms where humans and AI agents build, deploy, and operate software at scale.</li>
           </ul>
+          
+          <div class="pdf-action-wrapper">
+            <a href="presentation.pdf" target="_blank" class="btn-download-pdf">
+              📄 Download PDF Presentation
+            </a>
+          </div>
         </div>
         <div class="slide-image-container">
           <img src="illustrations/07-new-stack-conclusion.png" alt="Autonomous Stack" class="slide-image">
