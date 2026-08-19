@@ -1,385 +1,440 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Olavo Mello — Articles & Technical Essays</title>
-  <meta name="description" content="Personal technical articles and illustrated deep dives on software architecture, platform engineering, developer experience, and AI systems by Olavo Mello.">
-  <link rel="canonical" href="https://olavomello.github.io/articles/">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Olavo Mello — Articles & Technical Essays</title>
+    <meta
+      name="description"
+      content="Personal technical articles and illustrated deep dives on software architecture, platform engineering, developer experience, and AI systems by Olavo Mello."
+    />
+    <link rel="canonical" href="https://olavomello.github.io/articles/" />
 
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Olavo Mello — Articles & Technical Essays">
-  <meta property="og:description" content="Personal technical articles and illustrated deep dives on software architecture, platform engineering, developer experience, and AI systems by Olavo Mello.">
-  <meta property="og:image" content="https://olavomello.github.io/articles/platform-vs-product/illustrations/01-cover.png">
-  <meta property="og:url" content="https://olavomello.github.io/articles/">
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="Olavo Mello — Articles & Technical Essays"
+    />
+    <meta
+      property="og:description"
+      content="Personal technical articles and illustrated deep dives on software architecture, platform engineering, developer experience, and AI systems by Olavo Mello."
+    />
+    <meta
+      property="og:image"
+      content="https://olavomello.github.io/articles/platform-vs-product/illustrations/01-cover.png"
+    />
+    <meta property="og:url" content="https://olavomello.github.io/articles/" />
 
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Olavo Mello — Articles & Technical Essays">
-  <meta name="twitter:description" content="Personal technical articles and illustrated deep dives on software architecture, platform engineering, developer experience, and AI systems by Olavo Mello.">
-  <meta name="twitter:image" content="https://olavomello.github.io/articles/platform-vs-product/illustrations/01-cover.png">
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Olavo Mello — Articles & Technical Essays"
+    />
+    <meta
+      name="twitter:description"
+      content="Personal technical articles and illustrated deep dives on software architecture, platform engineering, developer experience, and AI systems by Olavo Mello."
+    />
+    <meta
+      name="twitter:image"
+      content="https://olavomello.github.io/articles/platform-vs-product/illustrations/01-cover.png"
+    />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --ink-navy: #1F2A37;
-      --soft-mint: #CFE7DF;
-      --light-teal: #E8F3F1;
-      --warm-beige: #F2E9DF;
-      --soft-gray: #E6E6E6;
-      --bg-white: #FFFFFF;
-      --accent-mint: #3B9B85;
-      --linkedin-blue: #0A66C2;
-      --font-title: 'Cormorant Garamond', Georgia, serif;
-      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    }
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink-navy: #1f2a37;
+        --soft-mint: #cfe7df;
+        --light-teal: #e8f3f1;
+        --warm-beige: #f2e9df;
+        --soft-gray: #e6e6e6;
+        --bg-white: #ffffff;
+        --accent-mint: #3b9b85;
+        --linkedin-blue: #0a66c2;
+        --font-title: "Cormorant Garamond", Georgia, serif;
+        --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    body {
-      background-color: #F8FAF9;
-      color: var(--ink-navy);
-      font-family: var(--font-body);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+      body {
+        background-color: #f8faf9;
+        color: var(--ink-navy);
+        font-family: var(--font-body);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
 
-    /* Top Navigation Header */
-    header {
-      background: var(--bg-white);
-      border-bottom: 1px solid var(--light-teal);
-      padding: 1.5rem 3rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+      /* Top Navigation Header */
+      header {
+        background: var(--bg-white);
+        border-bottom: 1px solid var(--light-teal);
+        padding: 1.5rem 3rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-    .brand {
-      display: flex;
-      flex-direction: column;
-    }
+      .brand {
+        display: flex;
+        flex-direction: column;
+      }
 
-    .author-name {
-      font-family: var(--font-title);
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: var(--ink-navy);
-      text-decoration: none;
-    }
+      .author-name {
+        font-family: var(--font-title);
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--ink-navy);
+        text-decoration: none;
+      }
 
-    .author-subtitle {
-      font-size: 0.9rem;
-      color: #6B7280;
-      font-weight: 400;
-    }
+      .author-subtitle {
+        font-size: 0.9rem;
+        color: #6b7280;
+        font-weight: 400;
+      }
 
-    .linkedin-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--light-teal);
-      color: var(--linkedin-blue);
-      text-decoration: none;
-      padding: 0.55rem 1.1rem;
-      border-radius: 20px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      border: 1px solid var(--soft-mint);
-      transition: all 0.2s ease;
-    }
+      .linkedin-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--light-teal);
+        color: var(--linkedin-blue);
+        text-decoration: none;
+        padding: 0.55rem 1.1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: 1px solid var(--soft-mint);
+        transition: all 0.2s ease;
+      }
 
-    .linkedin-btn:hover {
-      background: var(--linkedin-blue);
-      color: var(--bg-white);
-      transform: translateY(-1px);
-    }
+      .linkedin-btn:hover {
+        background: var(--linkedin-blue);
+        color: var(--bg-white);
+        transform: translateY(-1px);
+      }
 
-    /* Main Container */
-    main {
-      flex: 1;
-      max-width: 1200px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 3.5rem 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 2.5rem;
-    }
+      /* Main Container */
+      main {
+        flex: 1;
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 3.5rem 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+      }
 
-    /* Generic Hero Section */
-    .hero-section {
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-      max-width: 760px;
-      margin: 0 auto;
-    }
+      /* Generic Hero Section */
+      .hero-section {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        max-width: 760px;
+        margin: 0 auto;
+      }
 
-    .hero-title {
-      font-family: var(--font-title);
-      font-size: 3.2rem;
-      line-height: 1.15;
-      color: var(--ink-navy);
-      font-weight: 700;
-    }
+      .hero-title {
+        font-family: var(--font-title);
+        font-size: 3.2rem;
+        line-height: 1.15;
+        color: var(--ink-navy);
+        font-weight: 700;
+      }
 
-    .hero-description {
-      font-size: 1.15rem;
-      color: #4B5563;
-      line-height: 1.6;
-    }
+      .hero-description {
+        font-size: 1.15rem;
+        color: #4b5563;
+        line-height: 1.6;
+      }
 
-    /* Articles Category Menu */
-    .articles-menu {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-      margin-top: 0.5rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--light-teal);
-    }
+      /* Articles Category Menu */
+      .articles-menu {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--light-teal);
+      }
 
-    .menu-item {
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #4B5563;
-      padding: 0.5rem 1.1rem;
-      border-radius: 20px;
-      background: var(--bg-white);
-      border: 1px solid var(--soft-gray);
-      transition: all 0.2s ease;
-      cursor: pointer;
-    }
+      .menu-item {
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #4b5563;
+        padding: 0.5rem 1.1rem;
+        border-radius: 20px;
+        background: var(--bg-white);
+        border: 1px solid var(--soft-gray);
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
 
-    .menu-item:hover, .menu-item.active {
-      background: var(--ink-navy);
-      color: var(--bg-white);
-      border-color: var(--ink-navy);
-    }
+      .menu-item:hover,
+      .menu-item.active {
+        background: var(--ink-navy);
+        color: var(--bg-white);
+        border-color: var(--ink-navy);
+      }
 
-    /* Articles Grid */
-    .articles-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-      gap: 2.5rem;
-      margin-top: 1rem;
-    }
+      /* Articles Grid */
+      .articles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+        gap: 2.5rem;
+        margin-top: 1rem;
+      }
 
-    .article-card {
-      background: var(--bg-white);
-      border-radius: 16px;
-      border: 1px solid var(--soft-gray);
-      box-shadow: 0 10px 25px rgba(31, 42, 55, 0.05);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      color: inherit;
-    }
+      .article-card {
+        background: var(--bg-white);
+        border-radius: 16px;
+        border: 1px solid var(--soft-gray);
+        box-shadow: 0 10px 25px rgba(31, 42, 55, 0.05);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+      }
 
-    .article-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 20px 40px rgba(31, 42, 55, 0.1);
-      border-color: var(--soft-mint);
-    }
+      .article-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 40px rgba(31, 42, 55, 0.1);
+        border-color: var(--soft-mint);
+      }
 
-    .card-image-wrapper {
-      position: relative;
-      width: 100%;
-      height: 240px;
-      background: var(--light-teal);
-      overflow: hidden;
-    }
+      .card-image-wrapper {
+        position: relative;
+        width: 100%;
+        height: 240px;
+        background: var(--light-teal);
+        overflow: hidden;
+      }
 
-    .card-image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.4s ease;
-    }
+      .card-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+      }
 
-    .article-card:hover .card-image {
-      transform: scale(1.03);
-    }
+      .article-card:hover .card-image {
+        transform: scale(1.03);
+      }
 
-    .card-badge {
-      position: absolute;
-      top: 1rem;
-      left: 1rem;
-      background: var(--bg-white);
-      color: var(--accent-mint);
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      padding: 0.35rem 0.75rem;
-      border-radius: 4px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
+      .card-badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background: var(--bg-white);
+        color: var(--accent-mint);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 0.35rem 0.75rem;
+        border-radius: 4px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
 
-    .card-content {
-      padding: 2rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      flex: 1;
-    }
+      .card-content {
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        flex: 1;
+      }
 
-    .card-title {
-      font-family: var(--font-title);
-      font-size: 1.8rem;
-      line-height: 1.25;
-      color: var(--ink-navy);
-      font-weight: 700;
-    }
+      .card-title {
+        font-family: var(--font-title);
+        font-size: 1.8rem;
+        line-height: 1.25;
+        color: var(--ink-navy);
+        font-weight: 700;
+      }
 
-    .card-excerpt {
-      font-size: 0.95rem;
-      color: #4B5563;
-      line-height: 1.5;
-      flex: 1;
-    }
+      .card-excerpt {
+        font-size: 0.95rem;
+        color: #4b5563;
+        line-height: 1.5;
+        flex: 1;
+      }
 
-    .card-footer-link {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.95rem;
-      font-weight: 600;
-      color: var(--accent-mint);
-      margin-top: 0.5rem;
-    }
+      .card-footer-link {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--accent-mint);
+        margin-top: 0.5rem;
+      }
 
-    .article-card:hover .card-footer-link {
-      color: var(--ink-navy);
-    }
+      .article-card:hover .card-footer-link {
+        color: var(--ink-navy);
+      }
 
-    /* Footer */
-    footer {
-      background: var(--bg-white);
-      border-top: 1px solid var(--light-teal);
-      padding: 2rem;
-      text-align: center;
-      font-size: 0.95rem;
-      color: #6B7280;
-      margin-top: auto;
-    }
+      /* Footer */
+      footer {
+        background: var(--bg-white);
+        border-top: 1px solid var(--light-teal);
+        padding: 2rem;
+        text-align: center;
+        font-size: 0.95rem;
+        color: #6b7280;
+        margin-top: auto;
+      }
 
-    .footer-anchor {
-      color: var(--linkedin-blue);
-      text-decoration: none;
-      font-weight: 600;
-    }
+      .footer-anchor {
+        color: var(--linkedin-blue);
+        text-decoration: none;
+        font-weight: 600;
+      }
 
-    .footer-anchor:hover {
-      text-decoration: underline;
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Header -->
-  <header>
-    <div class="brand">
-      <a href="#" class="author-name">Olavo Mello</a>
-      <span class="author-subtitle">Articles, Architecture & Software Insights</span>
-    </div>
-    <a href="https://www.linkedin.com/in/olavo-mello/" target="_blank" class="linkedin-btn">
-      <span>LinkedIn Profile</span> &#8599;
-    </a>
-  </header>
-
-  <!-- Main Content -->
-  <main>
-    <!-- Generic Hero Section -->
-    <section class="hero-section">
-      <h1 class="hero-title">Technical Articles & Publications</h1>
-      <p class="hero-description">
-        Perspectives on software architecture, developer experience, engineering management, and AI systems.
-      </p>
-    </section>
-
-    <!-- Articles Menu -->
-    <nav class="articles-menu">
-      <a href="#" class="menu-item active">All Articles</a>
-      <a href="#" class="menu-item">Architecture & Platform</a>
-      <a href="#" class="menu-item">Software Engineering</a>
-      <a href="#" class="menu-item">AI & Automation</a>
-    </nav>
-
-    <!-- Articles Grid -->
-    <section class="articles-grid">
-
-      <!-- Article Card #1 -->
-      <a href="platform-vs-product/" class="article-card">
-        <div class="card-image-wrapper">
-          <span class="card-badge">Platform & DevEx</span>
-          <img src="platform-vs-product/illustrations/01-cover.png" alt="Platform vs Product Engineer" class="card-image">
-        </div>
-        <div class="card-content">
-          <h2 class="card-title">Platform Engineer vs. Product Engineer</h2>
-          <p class="card-excerpt">
-            Where software engineering is heading in the era of platform ecosystems and AI agents. Exploring Customer Value vs. Engineering Leverage, DevEx, Golden Paths, and safe AI abstractions.
-          </p>
-          <div class="card-footer-link">
-            <span>Read Publication</span> &#8594;
-          </div>
-        </div>
+      .footer-anchor:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <a href="#" class="author-name">Olavo Mello</a>
+        <span class="author-subtitle"
+          >Articles, Architecture & Software Insights</span
+        >
+      </div>
+      <a
+        href="https://www.linkedin.com/in/olavo-mello/"
+        target="_blank"
+        class="linkedin-btn"
+      >
+        <span>LinkedIn Profile</span> &#8599;
       </a>
+    </header>
 
-      <!-- Article Card #2 -->
-      <a href="ai-agent-auto-seo/" class="article-card">
-        <div class="card-image-wrapper">
-          <span class="card-badge">AI & Automation</span>
-          <img src="ai-agent-auto-seo/illustrations/01-cover.png" alt="Auto SEO Expert" class="card-image">
-        </div>
-        <div class="card-content">
-          <h2 class="card-title">Auto SEO Expert: Autonomous AI SEO Agent</h2>
-          <p class="card-excerpt">
-            Complete specification for an autonomous AI SEO auditing agent. Exploring automatic discovery, 22-stage crawl pipelines, Generative Engine Optimization (GEO), and actionable code fixes.
-          </p>
-          <div class="card-footer-link">
-            <span>Read Publication</span> &#8594;
+    <!-- Main Content -->
+    <main>
+      <!-- Generic Hero Section -->
+      <section class="hero-section">
+        <h1 class="hero-title">Technical Articles & Publications</h1>
+        <p class="hero-description">
+          Perspectives on software architecture, developer experience,
+          engineering management, and AI systems.
+        </p>
+      </section>
+
+      <!-- Articles Grid -->
+      <section class="articles-grid">
+        <!-- Article Card #1 -->
+        <a href="platform-vs-product/" class="article-card">
+          <div class="card-image-wrapper">
+            <span class="card-badge">Platform & DevEx</span>
+            <img
+              src="platform-vs-product/illustrations/01-cover.png"
+              alt="Platform vs Product Engineer"
+              class="card-image"
+            />
           </div>
-        </div>
-      </a>
-
-      <!-- Article Card #3 -->
-      <a href="teams-to-agents/" class="article-card">
-        <div class="card-image-wrapper">
-          <span class="card-badge">AI & Engineering</span>
-          <img src="teams-to-agents/illustrations/01-cover.png" alt="From Teams to Agents" class="card-image">
-        </div>
-        <div class="card-content">
-          <h2 class="card-title">From Teams to Agents: The Changing Economics of Software Engineering</h2>
-          <p class="card-excerpt">
-            AI agents are not replacing software engineers — they are multiplying their capability. Exploring parallel orchestration, expertise as leverage, Platform Engineering, and the new economics of software.
-          </p>
-          <div class="card-footer-link">
-            <span>Read Publication</span> &#8594;
+          <div class="card-content">
+            <h2 class="card-title">Platform Engineer vs. Product Engineer</h2>
+            <p class="card-excerpt">
+              Where software engineering is heading in the era of platform
+              ecosystems and AI agents. Exploring Customer Value vs. Engineering
+              Leverage, DevEx, Golden Paths, and safe AI abstractions.
+            </p>
+            <div class="card-footer-link">
+              <span>Read Publication</span> &#8594;
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
 
-    </section>
-  </main>
+        <!-- Article Card #2 -->
+        <a href="ai-agent-auto-seo/" class="article-card">
+          <div class="card-image-wrapper">
+            <span class="card-badge">AI & Automation</span>
+            <img
+              src="ai-agent-auto-seo/illustrations/01-cover.png"
+              alt="Auto SEO Expert"
+              class="card-image"
+            />
+          </div>
+          <div class="card-content">
+            <h2 class="card-title">Auto SEO Expert: Autonomous AI SEO Agent</h2>
+            <p class="card-excerpt">
+              Complete specification for an autonomous AI SEO auditing agent.
+              Exploring automatic discovery, 22-stage crawl pipelines,
+              Generative Engine Optimization (GEO), and actionable code fixes.
+            </p>
+            <div class="card-footer-link">
+              <span>Read Publication</span> &#8594;
+            </div>
+          </div>
+        </a>
 
-  <!-- Footer -->
-  <footer>
-    Created by <a href="https://www.linkedin.com/in/olavo-mello/" target="_blank" class="footer-anchor">Olavo Mello</a> - <a href="https://www.linkedin.com/in/olavo-mello/" target="_blank" class="footer-anchor">linkedin.com/in/olavo-mello/</a>
-  </footer>
+        <!-- Article Card #3 -->
+        <a href="teams-to-agents/" class="article-card">
+          <div class="card-image-wrapper">
+            <span class="card-badge">AI & Engineering</span>
+            <img
+              src="teams-to-agents/illustrations/01-cover.png"
+              alt="From Teams to Agents"
+              class="card-image"
+            />
+          </div>
+          <div class="card-content">
+            <h2 class="card-title">
+              From Teams to Agents: The Changing Economics of Software
+              Engineering
+            </h2>
+            <p class="card-excerpt">
+              AI agents are not replacing software engineers — they are
+              multiplying their capability. Exploring parallel orchestration,
+              expertise as leverage, Platform Engineering, and the new economics
+              of software.
+            </p>
+            <div class="card-footer-link">
+              <span>Read Publication</span> &#8594;
+            </div>
+          </div>
+        </a>
+      </section>
+    </main>
 
-</body>
+    <!-- Footer -->
+    <footer>
+      Created by
+      <a
+        href="https://www.linkedin.com/in/olavo-mello/"
+        target="_blank"
+        class="footer-anchor"
+        >Olavo Mello</a
+      >
+      -
+      <a
+        href="https://www.linkedin.com/in/olavo-mello/"
+        target="_blank"
+        class="footer-anchor"
+        >linkedin.com/in/olavo-mello/</a
+      >
+    </footer>
+  </body>
 </html>
