@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>If I Were Rebuilding Netflix's Engineering Org With AI — Olavo Mello</title>
+  <meta name="description" content="A thought experiment: what an AI Native engineering organization at Netflix's scale could look like today — human decisions, AI orchestration, specialized agents, and the platform as safety layer.">
+  <link rel="canonical" href="https://olavomello.github.io/articles/netflix-ai-native-engineering/">
+
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="If I Were Rebuilding Netflix's Engineering Org With AI — Olavo Mello">
+  <meta property="og:description" content="A thought experiment: what an AI Native engineering organization at Netflix's scale could look like today — human decisions, AI orchestration, specialized agents, and the platform as safety layer.">
+  <meta property="og:image" content="https://olavomello.github.io/articles/netflix-ai-native-engineering/illustrations/01-cover.png">
+  <meta property="og:url" content="https://olavomello.github.io/articles/netflix-ai-native-engineering/">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="If I Were Rebuilding Netflix's Engineering Org With AI — Olavo Mello">
+  <meta name="twitter:description" content="A thought experiment: what an AI Native engineering organization at Netflix's scale could look like today — human decisions, AI orchestration, specialized agents, and the platform as safety layer.">
+  <meta name="twitter:image" content="https://olavomello.github.io/articles/netflix-ai-native-engineering/illustrations/01-cover.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink-navy: #1F2A37;
+      --soft-mint: #CFE7DF;
+      --light-teal: #E8F3F1;
+      --warm-beige: #F2E9DF;
+      --soft-gray: #E6E6E6;
+      --bg-white: #FFFFFF;
+      --accent-mint: #3B9B85;
+      --font-title: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-code: 'Fira Code', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #F8FAF9;
+      color: var(--ink-navy);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 1rem;
+    }
+
+    .carousel-wrapper {
+      width: 100%;
+      max-width: 1280px;
+      background: var(--bg-white);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(31, 42, 55, 0.08), 0 2px 6px rgba(31, 42, 55, 0.04);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--soft-gray);
+    }
+
+    /* Header */
+    .carousel-header {
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--light-teal);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-white);
+      gap: 1rem;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      min-width: 0;
+    }
+
+    .back-btn {
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ink-navy);
+      background: var(--light-teal);
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      border: 1px solid var(--soft-mint);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .back-btn:hover {
+      background: var(--ink-navy);
+      color: var(--bg-white);
+    }
+
+    .brand-title {
+      font-family: var(--font-title);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--ink-navy);
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .slide-counter {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ink-navy);
+      background: var(--light-teal);
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* Viewport & Slides */
+    .carousel-viewport {
+      position: relative;
+      width: 100%;
+      min-height: 600px;
+      overflow: hidden;
+      touch-action: pan-y;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      transform: translateX(20px);
+      padding: 2.5rem 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      background: var(--bg-white);
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+    }
+
+    .slide-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      z-index: 2;
+    }
+
+    .scene-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--accent-mint);
+      background: var(--light-teal);
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      width: fit-content;
+    }
+
+    .slide-title {
+      font-family: var(--font-title);
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      line-height: 1.15;
+      font-weight: 700;
+      color: var(--ink-navy);
+    }
+
+    .slide-subtitle {
+      font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+      color: #4B5563;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    .quote-box {
+      background: var(--light-teal);
+      border-left: 4px solid var(--accent-mint);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      font-family: var(--font-title);
+      font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+      font-style: italic;
+      color: var(--ink-navy);
+      line-height: 1.4;
+    }
+
+    .bullets-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .bullets-list li {
+      position: relative;
+      padding-left: 1.5rem;
+      font-size: clamp(0.85rem, 1.4vw, 0.95rem);
+      line-height: 1.5;
+      color: var(--ink-navy);
+    }
+
+    .bullets-list li::before {
+      content: '▲';
+      position: absolute;
+      left: 0;
+      top: 2px;
+      font-size: 0.65rem;
+      color: var(--accent-mint);
+    }
+
+    .code-snippet {
+      background: var(--ink-navy);
+      color: var(--soft-mint);
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      font-family: var(--font-code);
+      font-size: clamp(0.75rem, 1.3vw, 0.85rem);
+      line-height: 1.6;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Images */
+    .slide-image-container {
+      width: 100%;
+      height: 100%;
+      max-height: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--light-teal);
+      border-radius: 12px;
+      padding: 1rem;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--soft-mint);
+    }
+
+    .slide-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(31, 42, 55, 0.12);
+    }
+
+    /* PDF Internal Action Button */
+    .pdf-action-wrapper {
+      margin-top: 0.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .btn-download-pdf {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--ink-navy);
+      color: var(--bg-white);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.75rem 1.4rem;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(31, 42, 55, 0.15);
+    }
+
+    .btn-download-pdf:hover {
+      background: var(--accent-mint);
+      transform: translateY(-2px);
+    }
+
+    /* Footer Controls */
+    .carousel-footer {
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--light-teal);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-white);
+      gap: 1rem;
+    }
+
+    .author-link {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--ink-navy);
+      white-space: nowrap;
+    }
+
+    .linkedin-anchor {
+      color: #0A66C2;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .linkedin-anchor:hover {
+      text-decoration: underline;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn-nav {
+      background: var(--bg-white);
+      border: 1.5px solid var(--ink-navy);
+      color: var(--ink-navy);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+    }
+
+    .btn-nav:hover {
+      background: var(--ink-navy);
+      color: var(--bg-white);
+      transform: translateY(-2px);
+    }
+
+    .btn-nav:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .dots-container {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--soft-gray);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dot.active {
+      background: var(--ink-navy);
+      width: 24px;
+      border-radius: 5px;
+    }
+
+    /* ===================================================
+       RESPONSIVE MEDIA QUERIES (TABLETS & MOBILE PHONES)
+       =================================================== */
+
+    @media (max-width: 1024px) {
+      body {
+        padding: 0.75rem 0.5rem;
+      }
+
+      .carousel-viewport {
+        min-height: auto;
+      }
+
+      .slide {
+        position: relative;
+        top: auto;
+        left: auto;
+        width: 100%;
+        height: auto;
+        display: none;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1.5rem 1.25rem;
+        transform: none;
+      }
+
+      .slide.active {
+        display: flex;
+        flex-direction: column;
+        transform: none;
+      }
+
+      /* Re-order elements on mobile so image comes after title for natural reading */
+      .slide-content {
+        order: 1;
+      }
+
+      .slide-image-container {
+        order: 2;
+        max-height: 280px;
+        aspect-ratio: 16 / 9;
+      }
+
+      .carousel-header {
+        padding: 0.85rem 1.25rem;
+      }
+
+      .brand-title {
+        display: none; /* Hide long title on small screens to preserve space */
+      }
+
+      .carousel-footer {
+        flex-direction: column-reverse;
+        padding: 1rem 1.25rem;
+        gap: 1.25rem;
+      }
+
+      .author-link {
+        text-align: center;
+        white-space: normal;
+        font-size: 0.8rem;
+      }
+
+      .dots-container {
+        order: 2;
+      }
+
+      .nav-buttons {
+        order: 1;
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .btn-nav {
+        width: 48px;
+        height: 48px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .slide {
+        padding: 1.25rem 1rem;
+        gap: 1.25rem;
+      }
+
+      .slide-image-container {
+        max-height: 220px;
+        padding: 0.5rem;
+      }
+
+      .quote-box {
+        padding: 0.85rem 1rem;
+        font-size: 1.05rem;
+      }
+
+      .code-snippet {
+        font-size: 0.75rem;
+        padding: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="carousel-wrapper">
+    <!-- Header -->
+    <header class="carousel-header">
+      <div class="header-left">
+        <a href="../" class="back-btn">&#8592; Articles</a>
+        <div class="brand-title">If I Were Rebuilding Netflix's Engineering Org With AI</div>
+      </div>
+      <div class="slide-counter" id="slideCounter">Scene 1 of 8</div>
+    </header>
+
+    <!-- Viewport -->
+    <div class="carousel-viewport" id="viewport">
+
+      <!-- Scene 01 -->
+      <div class="slide active" data-slide="1">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 01 • Introduction</span>
+          <h1 class="slide-title">If I Were Rebuilding Netflix's Engineering Org With AI</h1>
+          <p class="slide-subtitle">A practical proposal for an AI Native engineering organization.</p>
+          <div class="quote-box">
+            "How can we give great engineers an engineering system capable of multiplying their capabilities?"
+          </div>
+          <ul class="bullets-list">
+            <li>This is not a description of Netflix's actual internal architecture — it's a thought experiment using technologies and practices available today.</li>
+            <li>The interesting part is not AI replacing engineers.</li>
+            <li>It's what happens when human engineering decisions become the input to a highly orchestrated network of AI agents, platforms, automation, and production systems.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/01-cover.png" alt="If I Were Rebuilding Netflix's Engineering Org With AI" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 02 -->
+      <div class="slide" data-slide="2">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 02 • Human Decision</span>
+          <h1 class="slide-title">It Starts With a Human Decision</h1>
+          <p class="slide-subtitle">"Improve personalized recommendations for users watching content on mobile devices."</p>
+          <div class="code-snippet">HUMAN → Product Intent → Specification
+      ↓
+AI Orchestrator
+      ↓
+Product Agent · Architecture Agent · Data Agent
+      ↓
+Engineering Agents
+      ↓
+Backend · Mobile · ML Agent
+      ↓
+Validation → HUMAN REVIEW</div>
+          <ul class="bullets-list">
+            <li>The human defines what and why.</li>
+            <li>The AI system helps determine how and in what sequence.</li>
+            <li>That distinction is fundamental.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/02-human-decision.png" alt="It Starts With a Human Decision" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 03 -->
+      <div class="slide" data-slide="3">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 03 • The Stack</span>
+          <h1 class="slide-title">The Proposed AI Engineering Stack</h1>
+          <p class="slide-subtitle">Six layers, from human decisions down to production.</p>
+          <div class="code-snippet">HUMAN DECISIONS
+      ↓
+AI ORCHESTRATION
+      ↓
+AI ENGINEERING
+      ↓
+ENGINEERING PLATFORM
+      ↓
+CLOUD & DATA
+      ↓
+PRODUCTION</div>
+          <ul class="bullets-list">
+            <li>AI sits between human intent and engineering execution.</li>
+            <li>It doesn't replace the entire architecture — it operates within it.</li>
+            <li>Humans define the architecture and technology boundaries; agents operate inside those boundaries.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/03-six-layer-stack.png" alt="The Proposed AI Engineering Stack" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 04 -->
+      <div class="slide" data-slide="4">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 04 • Context & Tools</span>
+          <h1 class="slide-title">Context Engineering & MCP</h1>
+          <p class="slide-subtitle">RAG feeds the agent context. MCP exposes controlled tools instead of unrestricted access.</p>
+          <div class="code-snippet">get_repository()    create_branch()
+run_tests()          analyze_logs()
+get_metrics()        create_pull_request()
+deploy_staging()     rollback()</div>
+          <ul class="bullets-list">
+            <li>An AI agent cannot make good engineering decisions without good context — a RAG layer retrieves architecture docs, API contracts, standards, and prior decisions.</li>
+            <li>Files like AGENTS.md become part of the operational context given to AI agents, not just documentation for developers.</li>
+            <li>The agent becomes capable of acting, but the platform still controls what it is allowed to do.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/04-context-and-mcp.png" alt="Context Engineering & MCP" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 05 -->
+      <div class="slide" data-slide="5">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 05 • Specialized Agents</span>
+          <h1 class="slide-title">Specialized Agents, Not One Giant AI</h1>
+          <p class="slide-subtitle">This is much closer to an engineering organization than to a chatbot.</p>
+          <div class="code-snippet">ORCHESTRATOR
+      ↓
+Architecture · Coding · Data Agents
+      ↓
+Security · Testing · ML Engineering Agents
+      ↓
+Performance Agent → Review Agent</div>
+          <ul class="bullets-list">
+            <li>Each agent has a responsibility: architecture analysis, implementation, testing, security, performance, data, and final review.</li>
+            <li>I would not create one giant "Netflix AI Engineer" — I would create specialized agents.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/05-specialized-agents.png" alt="Specialized Agents, Not One Giant AI" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 06 -->
+      <div class="slide" data-slide="6">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 06 • Safety Layer</span>
+          <h1 class="slide-title">GitHub, CI/CD & the Platform as Safety Layer</h1>
+          <p class="slide-subtitle">The platform evaluates and authorizes before any infrastructure action executes.</p>
+          <div class="code-snippet">AI Agent → Git branch → Implementation
+→ Automated tests → Pull Request
+→ AI review → Security analysis
+→ Human review → Merge</div>
+          <ul class="bullets-list">
+            <li>GitHub remains the collaboration layer — AI simply becomes another participant in the workflow.</li>
+            <li>CI/CD becomes an AI validation loop: if a build fails, an agent analyzes logs, identifies a probable cause, and proposes a fix.</li>
+            <li>Agents should interact with capabilities, not necessarily with unrestricted infrastructure — the platform checks authorization, environment, resource limits, and security policy first.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/06-github-cicd-platform.png" alt="GitHub, CI/CD & the Platform as Safety Layer" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 07 -->
+      <div class="slide" data-slide="7">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 07 • Control Plane</span>
+          <h1 class="slide-title">The Control Plane & Incident Response</h1>
+          <p class="slide-subtitle">Human control scales with risk.</p>
+          <div class="quote-box">
+            "The higher the potential impact, the stronger the human control."
+          </div>
+          <ul class="bullets-list">
+            <li>With AI, an incident flows through: Alert → Incident Agent → correlate logs, metrics, traces, deployments, and recent commits → root cause analysis → recommended action → human decision.</li>
+            <li>For low risk operations, some actions could become automated; for high risk operations, human approval remains mandatory.</li>
+            <li>AI becomes a kind of engineering control plane, creating a continuous loop between production, observability, and human feedback.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/07-control-plane-incident.png" alt="The Control Plane & Incident Response" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 08 -->
+      <div class="slide" data-slide="8">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 08 • Conclusion</span>
+          <h1 class="slide-title">Using AI to Code vs. Engineering With AI</h1>
+          <p class="slide-subtitle">The more autonomous the agents become, the more important engineering expertise becomes.</p>
+          <div class="quote-box">
+            "Give Netflix's engineers an AI Native engineering system capable of building, operating, and continuously improving Netflix at a scale that was previously impossible."
+          </div>
+          <ul class="bullets-list">
+            <li>The goal isn't "let AI build Netflix" — it's giving engineers an AI Native system to build, operate, and improve at a scale previously impossible.</li>
+            <li>AI can produce an answer; the engineer needs to determine whether that answer is good enough to become part of reality.</li>
+            <li>That is the difference between using AI to code and engineering with AI — and it will define one of the most important transitions in software engineering over the next decade.</li>
+          </ul>
+
+          <div class="pdf-action-wrapper">
+            <a href="presentation.pdf" target="_blank" class="btn-download-pdf">
+              📄 Download PDF Presentation
+            </a>
+          </div>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/08-engineering-with-ai.png" alt="Using AI to Code vs. Engineering With AI" class="slide-image">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer Controls -->
+    <footer class="carousel-footer">
+      <div class="author-link">
+        Created by <a href="https://www.linkedin.com/in/olavo-mello/" target="_blank" class="linkedin-anchor">Olavo Mello</a> - <a href="https://www.linkedin.com/in/olavo-mello/" target="_blank" class="linkedin-anchor">linkedin.com/in/olavo-mello/</a>
+      </div>
+
+      <div class="dots-container" id="dotsContainer">
+        <div class="dot active" data-slide="1"></div>
+        <div class="dot" data-slide="2"></div>
+        <div class="dot" data-slide="3"></div>
+        <div class="dot" data-slide="4"></div>
+        <div class="dot" data-slide="5"></div>
+        <div class="dot" data-slide="6"></div>
+        <div class="dot" data-slide="7"></div>
+        <div class="dot" data-slide="8"></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn-nav" id="prevBtn" disabled aria-label="Previous Slide">&#8592;</button>
+        <button class="btn-nav" id="nextBtn" aria-label="Next Slide">&#8594;</button>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const slideCounter = document.getElementById('slideCounter');
+    const viewport = document.getElementById('viewport');
+    let currentSlide = 1;
+    const totalSlides = slides.length;
+
+    function updateCarousel(slideIndex) {
+      slides.forEach(slide => {
+        slide.classList.remove('active');
+        if (parseInt(slide.getAttribute('data-slide')) === slideIndex) {
+          slide.classList.add('active');
+        }
+      });
+
+      dots.forEach(dot => {
+        dot.classList.remove('active');
+        if (parseInt(dot.getAttribute('data-slide')) === slideIndex) {
+          dot.classList.add('active');
+        }
+      });
+
+      slideCounter.textContent = `Scene ${slideIndex} of ${totalSlides}`;
+      prevBtn.disabled = slideIndex === 1;
+      nextBtn.disabled = slideIndex === totalSlides;
+
+      // Scroll slide to top on slide change on mobile
+      const activeSlide = document.querySelector('.slide.active');
+      if (activeSlide) {
+        activeSlide.scrollTop = 0;
+      }
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateCarousel(currentSlide);
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateCarousel(currentSlide);
+      }
+    });
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', (e) => {
+        const slideIndex = parseInt(e.target.getAttribute('data-slide'));
+        currentSlide = slideIndex;
+        updateCarousel(currentSlide);
+      });
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && currentSlide > 1) {
+        currentSlide--;
+        updateCarousel(currentSlide);
+      } else if (e.key === 'ArrowRight' && currentSlide < totalSlides) {
+        currentSlide++;
+        updateCarousel(currentSlide);
+      }
+    });
+
+    // Touch Swipe Gesture Support for Mobile Devices
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    viewport.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    viewport.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+      const swipeDistance = touchEndX - touchStartX;
+      const minSwipeDistance = 50; // Minimum px threshold for swipe
+
+      if (swipeDistance < -minSwipeDistance && currentSlide < totalSlides) {
+        // Swiped Left -> Next Slide
+        currentSlide++;
+        updateCarousel(currentSlide);
+      } else if (swipeDistance > minSwipeDistance && currentSlide > 1) {
+        // Swiped Right -> Previous Slide
+        currentSlide--;
+        updateCarousel(currentSlide);
+      }
+    }
+  </script>
+</body>
+</html>
