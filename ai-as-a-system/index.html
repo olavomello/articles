@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>AIS - AI as a System: The Architecture Behind AI Driven Software Development — Olavo Mello</title>
+  <meta name="description" content="AI as a System: an engineering philosophy where models, context, memory, agents, orchestration, tools, guardrails, validation, observability and humans work together as one architecture for AI driven software development.">
+  <link rel="canonical" href="https://olavomello.github.io/articles/ai-as-a-system/">
+
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="AIS - AI as a System: The Architecture Behind AI Driven Software Development — Olavo Mello">
+  <meta property="og:description" content="AI as a System: an engineering philosophy where models, context, memory, agents, orchestration, tools, guardrails, validation, observability and humans work together as one architecture for AI driven software development.">
+  <meta property="og:image" content="https://olavomello.github.io/articles/ai-as-a-system/illustrations/01-cover.png">
+  <meta property="og:url" content="https://olavomello.github.io/articles/ai-as-a-system/">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AIS - AI as a System: The Architecture Behind AI Driven Software Development — Olavo Mello">
+  <meta name="twitter:description" content="AI as a System: an engineering philosophy where models, context, memory, agents, orchestration, tools, guardrails, validation, observability and humans work together as one architecture for AI driven software development.">
+  <meta name="twitter:image" content="https://olavomello.github.io/articles/ai-as-a-system/illustrations/01-cover.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink-navy: #1F2A37;
+      --soft-mint: #CFE7DF;
+      --light-teal: #E8F3F1;
+      --warm-beige: #F2E9DF;
+      --soft-gray: #E6E6E6;
+      --bg-white: #FFFFFF;
+      --accent-mint: #3B9B85;
+      --font-title: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-code: 'Fira Code', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #F8FAF9;
+      color: var(--ink-navy);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 1rem;
+    }
+
+    .carousel-wrapper {
+      width: 100%;
+      max-width: 1280px;
+      background: var(--bg-white);
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(31, 42, 55, 0.08), 0 2px 6px rgba(31, 42, 55, 0.04);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--soft-gray);
+    }
+
+    /* Header */
+    .carousel-header {
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--light-teal);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-white);
+      gap: 1rem;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      min-width: 0;
+    }
+
+    .back-btn {
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ink-navy);
+      background: var(--light-teal);
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      border: 1px solid var(--soft-mint);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .back-btn:hover {
+      background: var(--ink-navy);
+      color: var(--bg-white);
+    }
+
+    .brand-title {
+      font-family: var(--font-title);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--ink-navy);
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .slide-counter {
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ink-navy);
+      background: var(--light-teal);
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* Viewport & Slides */
+    .carousel-viewport {
+      position: relative;
+      width: 100%;
+      min-height: 600px;
+      overflow: hidden;
+      touch-action: pan-y;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      transform: translateX(20px);
+      padding: 2.5rem 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+      background: var(--bg-white);
+      overflow-y: auto;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(0);
+    }
+
+    .slide-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      z-index: 2;
+    }
+
+    .scene-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--accent-mint);
+      background: var(--light-teal);
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      width: fit-content;
+    }
+
+    .slide-title {
+      font-family: var(--font-title);
+      font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      line-height: 1.15;
+      font-weight: 700;
+      color: var(--ink-navy);
+    }
+
+    .slide-subtitle {
+      font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+      color: #4B5563;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    .quote-box {
+      background: var(--light-teal);
+      border-left: 4px solid var(--accent-mint);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      font-family: var(--font-title);
+      font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+      font-style: italic;
+      color: var(--ink-navy);
+      line-height: 1.4;
+    }
+
+    .bullets-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .bullets-list li {
+      position: relative;
+      padding-left: 1.5rem;
+      font-size: clamp(0.85rem, 1.4vw, 0.95rem);
+      line-height: 1.5;
+      color: var(--ink-navy);
+    }
+
+    .bullets-list li::before {
+      content: '▲';
+      position: absolute;
+      left: 0;
+      top: 2px;
+      font-size: 0.65rem;
+      color: var(--accent-mint);
+    }
+
+    .code-snippet {
+      background: var(--ink-navy);
+      color: var(--soft-mint);
+      padding: 1rem 1.25rem;
+      border-radius: 8px;
+      font-family: var(--font-code);
+      font-size: clamp(0.75rem, 1.3vw, 0.85rem);
+      line-height: 1.6;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Images */
+    .slide-image-container {
+      width: 100%;
+      height: 100%;
+      max-height: 500px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--light-teal);
+      border-radius: 12px;
+      padding: 1rem;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--soft-mint);
+    }
+
+    .slide-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(31, 42, 55, 0.12);
+    }
+
+    /* PDF Internal Action Button */
+    .pdf-action-wrapper {
+      margin-top: 0.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .btn-download-pdf {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--ink-navy);
+      color: var(--bg-white);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 0.75rem 1.4rem;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(31, 42, 55, 0.15);
+    }
+
+    .btn-download-pdf:hover {
+      background: var(--accent-mint);
+      transform: translateY(-2px);
+    }
+
+    /* Footer Controls */
+    .carousel-footer {
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--light-teal);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-white);
+      gap: 1rem;
+    }
+
+    .author-link {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--ink-navy);
+      white-space: nowrap;
+    }
+
+    .linkedin-anchor {
+      color: #0A66C2;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .linkedin-anchor:hover {
+      text-decoration: underline;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn-nav {
+      background: var(--bg-white);
+      border: 1.5px solid var(--ink-navy);
+      color: var(--ink-navy);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+    }
+
+    .btn-nav:hover {
+      background: var(--ink-navy);
+      color: var(--bg-white);
+      transform: translateY(-2px);
+    }
+
+    .btn-nav:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .dots-container {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--soft-gray);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dot.active {
+      background: var(--ink-navy);
+      width: 24px;
+      border-radius: 5px;
+    }
+
+    /* ===================================================
+       RESPONSIVE MEDIA QUERIES (TABLETS & MOBILE PHONES)
+       =================================================== */
+
+    @media (max-width: 1024px) {
+      body {
+        padding: 0.75rem 0.5rem;
+      }
+
+      .carousel-viewport {
+        min-height: auto;
+      }
+
+      .slide {
+        position: relative;
+        top: auto;
+        left: auto;
+        width: 100%;
+        height: auto;
+        display: none;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1.5rem 1.25rem;
+        transform: none;
+      }
+
+      .slide.active {
+        display: flex;
+        flex-direction: column;
+        transform: none;
+      }
+
+      /* Re-order elements on mobile so image comes after title for natural reading */
+      .slide-content {
+        order: 1;
+      }
+
+      .slide-image-container {
+        order: 2;
+        max-height: 280px;
+        aspect-ratio: 16 / 9;
+      }
+
+      .carousel-header {
+        padding: 0.85rem 1.25rem;
+      }
+
+      .brand-title {
+        display: none; /* Hide long title on small screens to preserve space */
+      }
+
+      .carousel-footer {
+        flex-direction: column-reverse;
+        padding: 1rem 1.25rem;
+        gap: 1.25rem;
+      }
+
+      .author-link {
+        text-align: center;
+        white-space: normal;
+        font-size: 0.8rem;
+      }
+
+      .dots-container {
+        order: 2;
+      }
+
+      .nav-buttons {
+        order: 1;
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .btn-nav {
+        width: 48px;
+        height: 48px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .slide {
+        padding: 1.25rem 1rem;
+        gap: 1.25rem;
+      }
+
+      .slide-image-container {
+        max-height: 220px;
+        padding: 0.5rem;
+      }
+
+      .quote-box {
+        padding: 0.85rem 1rem;
+        font-size: 1.05rem;
+      }
+
+      .code-snippet {
+        font-size: 0.75rem;
+        padding: 0.85rem;
+      }
+    }
+  </style>
+  <style>
+    /* Article #6 has denser copy: give the desktop viewport enough height so slides don't scroll internally */
+    @media (min-width: 1025px) {
+      .carousel-viewport { min-height: 790px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="carousel-wrapper">
+    <!-- Header -->
+    <header class="carousel-header">
+      <div class="header-left">
+        <a href="../" class="back-btn">&#8592; Articles</a>
+        <div class="brand-title">AIS - AI as a System</div>
+      </div>
+      <div class="slide-counter" id="slideCounter">Scene 1 of 8</div>
+    </header>
+
+    <!-- Viewport -->
+    <div class="carousel-viewport" id="viewport">
+      <!-- Scene 01 -->
+      <div class="slide active" data-slide="1">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 01 • Introduction</span>
+          <h1 class="slide-title">AIS: AI as a System</h1>
+          <p class="slide-subtitle">The architecture behind AI driven software development.</p>
+          <div class="quote-box">
+            "There is a major difference between using AI during development and engineering a development process around AI."
+          </div>
+          <ul class="bullets-list">
+            <li>We are reaching a point where using AI in software development is no longer particularly interesting by itself. Almost everyone is doing it.</li>
+            <li>The first gives you productivity. The second can fundamentally change how software is built.</li>
+            <li>That distinction is what I mean by AI as a System.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/01-cover.png" alt="AIS: AI as a System" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 02 -->
+      <div class="slide" data-slide="2">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 02 • Evolution</span>
+          <h1 class="slide-title">From Prompts to Agents to Systems</h1>
+          <p class="slide-subtitle">A system begins when many components operate under a controlled architecture.</p>
+          <div class="code-snippet">Prompt → Repository → Terminal → External tools → Documentation
+      ↓
+MCP servers → Persistent instructions → Memory
+      ↓
+Specialized agents → Agents delegating to other agents
+      ↓
+AI as a System</div>
+          <ul class="bullets-list">
+            <li>The first model was simple: human provides instruction, AI generates output, human evaluates output.</li>
+            <li>At that point, the architecture changed. We had an agent: a component capable of observing an environment, selecting tools, executing actions, evaluating results and continuing until it reached an objective.</li>
+            <li>But agents alone are not the final architecture either. The important transition happens when multiple intelligent and deterministic components operate under a controlled architecture.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/02-prompts-to-systems.png" alt="From Prompts to Agents to Systems" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 03 -->
+      <div class="slide" data-slide="3">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 03 • The Layers</span>
+          <h1 class="slide-title">The Model Is a Component, Not the System</h1>
+          <p class="slide-subtitle">Improving an AI application no longer necessarily means replacing the model with a more powerful one.</p>
+          <div class="code-snippet"> 1. Intelligence        6. Memory
+ 2. Context             7. Validation
+ 3. Agent               8. Guardrail &amp; Governance
+ 4. Orchestration       9. Observability
+ 5. Tool               10. Human Decision</div>
+          <ul class="bullets-list">
+            <li>A model provides intelligence, but a production grade AI workflow also needs context, memory, tools, permissions, state, validation, observability, deterministic controls, escalation mechanisms, and sometimes humans. The model operates inside this architecture.</li>
+            <li>Berkeley researchers describe this as Compound AI Systems: performance achieved through combinations of models, retrieval systems, tools and other components instead of expecting a single model to solve the entire problem.</li>
+            <li>The question changes from "Which model should we use?" to "Which model should handle this specific task?"</li>
+            <li>Context should be managed like data, not accumulated like conversation history.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/03-ten-layers.png" alt="The Model Is a Component, Not the System" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 04 -->
+      <div class="slide" data-slide="4">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 04 • Agents &amp; Orchestration</span>
+          <h1 class="slide-title">Agents With Boundaries, Orchestrated by Design</h1>
+          <p class="slide-subtitle">Personality is not architecture. Responsibility and authority are.</p>
+          <div class="code-snippet">Requirement Analysis → Planning → Architecture Validation
+      ↓
+Implementation → Testing → Security Review
+      ↓
+Code Review → Human Approval</div>
+          <ul class="bullets-list">
+            <li>Specialization alone is not enough. Each agent has a responsibility, authority, tools, context, constraints and escalation rules.</li>
+            <li>The Testing Agent should not necessarily rewrite implementation code simply because a test failed. The Implementation Agent should not approve its own implementation.</li>
+            <li>An orchestrator doesn't need to be the smartest component in the system. Its job is to control execution and adapt the workflow to the task: a documentation change may skip architecture validation, a database migration may require additional approval.</li>
+            <li>Tool access follows the principle of least privilege. The intelligence layer decides what should happen; the tool layer determines what can actually happen.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/04-agents-and-orchestration.png" alt="Agents With Boundaries, Orchestrated by Design" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 05 -->
+      <div class="slide" data-slide="5">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 05 • Validation</span>
+          <h1 class="slide-title">AI Judges. Deterministic Systems Prove.</h1>
+          <p class="slide-subtitle">AI output should not automatically become truth.</p>
+          <div class="quote-box">
+            "Use AI for judgment. Use deterministic systems for facts whenever possible."
+          </div>
+          <ul class="bullets-list">
+            <li>Code can be compiled. Types can be checked. Tests can run. Schemas can be validated. Security scanners can inspect dependencies, and performance can be measured.</li>
+            <li>An AI agent can reason that an implementation appears correct. A test suite can demonstrate that defined behavior actually passes. Those are different levels of confidence.</li>
+            <li>AI should review AI: another agent examines the implementation without inheriting the assumptions made during implementation, and tests verify its behavior deterministically.</li>
+            <li>The mistake would be allowing the same agent to generate, evaluate and approve its own work without external checks. That creates artificial confidence.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/05-judgment-vs-facts.png" alt="AI Judges. Deterministic Systems Prove." class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 06 -->
+      <div class="slide" data-slide="6">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 06 • Governance</span>
+          <h1 class="slide-title">Instructions Are Not Controls</h1>
+          <p class="slide-subtitle">Guardrails should not be reduced to instructions inside a prompt.</p>
+          <div class="quote-box">
+            "Do not modify production." That is an instruction. Removing production credentials from the agent is a control.
+          </div>
+          <ul class="bullets-list">
+            <li>"Ask before deleting files" is an instruction. Requiring an approval token before destructive operations is a control. Reliable AI systems need both.</li>
+            <li>Without observability, autonomy becomes opacity. We need to reconstruct the decision path: which agent, which model, what context, which tools, which validations, how many tokens.</li>
+            <li>Human in the loop is not about limiting AI. It is about assigning decision authority correctly: AI executes low risk decisions, AI proposes consequential decisions, humans authorize critical decisions.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/06-instructions-vs-controls.png" alt="Instructions Are Not Controls" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 07 -->
+      <div class="slide" data-slide="7">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 07 • The Loop</span>
+          <h1 class="slide-title">A Controlled Loop</h1>
+          <p class="slide-subtitle">Speed without governance creates technical debt faster.</p>
+          <div class="code-snippet">Intent → Context → Planning → Execution
+      ↓
+Validation → Observation → Feedback → Decision
+      ↓
+The result becomes new project knowledge</div>
+          <ul class="bullets-list">
+            <li>A requirement enters the system, context is assembled, agents plan and execute, tools interact with the environment, validation checks the result and observability records what happened. Failures generate feedback, and the next execution starts with a better state.</li>
+            <li>More code does not necessarily mean more progress. AI without engineering discipline can create technical debt at unprecedented speed. Inside a properly designed system, it can continuously inspect, validate and improve the software.</li>
+            <li>Optimization happens at the system level, not simply at the token level: small models handle predictable tasks, strong models handle complex reasoning, deterministic code handles what doesn't require AI, and cached results prevent repeated reasoning.</li>
+          </ul>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/07-controlled-loop.png" alt="A Controlled Loop" class="slide-image">
+        </div>
+      </div>
+
+      <!-- Scene 08 -->
+      <div class="slide" data-slide="8">
+        <div class="slide-content">
+          <span class="scene-tag">Scene 08 • Conclusion</span>
+          <h1 class="slide-title">From Using AI Tools to Engineering Systems of Intelligence</h1>
+          <p class="slide-subtitle">Access to powerful models is rapidly becoming commoditized.</p>
+          <div class="quote-box">
+            "Having access to intelligence will not be the differentiator. Engineering that intelligence will be."
+          </div>
+          <ul class="bullets-list">
+            <li>The valuable engineer increasingly becomes the person capable of defining what should be built, how the system should be structured, what context AI needs, which agent owns each responsibility, which decisions can be automated and which must remain human.</li>
+            <li>The implementation layer becomes faster. The decision layer becomes more important: less effort typing implementation, more effort designing systems capable of producing reliable implementation.</li>
+            <li>We are moving from using AI tools to engineering systems of intelligence. And that, to me, is the real meaning of AI as a System.</li>
+          </ul>
+
+          <div class="pdf-action-wrapper">
+            <a href="presentation.pdf" target="_blank" class="btn-download-pdf">
+              📄 Download PDF Presentation
+            </a>
+          </div>
+        </div>
+        <div class="slide-image-container">
+          <img src="illustrations/08-systems-of-intelligence.png" alt="From Using AI Tools to Engineering Systems of Intelligence" class="slide-image">
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer Controls -->
+    <footer class="carousel-footer">
+      <div class="author-link">
+        Created by <a href="https://www.linkedin.com/in/olavo-mello/" target="_blank" class="linkedin-anchor">Olavo Mello</a> - <a href="https://www.linkedin.com/in/olavo-mello/" target="_blank" class="linkedin-anchor">linkedin.com/in/olavo-mello/</a>
+      </div>
+
+      <div class="dots-container" id="dotsContainer">
+        <div class="dot active" data-slide="1"></div>
+        <div class="dot" data-slide="2"></div>
+        <div class="dot" data-slide="3"></div>
+        <div class="dot" data-slide="4"></div>
+        <div class="dot" data-slide="5"></div>
+        <div class="dot" data-slide="6"></div>
+        <div class="dot" data-slide="7"></div>
+        <div class="dot" data-slide="8"></div>
+      </div>
+
+      <div class="nav-buttons">
+        <button class="btn-nav" id="prevBtn" disabled aria-label="Previous Slide">&#8592;</button>
+        <button class="btn-nav" id="nextBtn" aria-label="Next Slide">&#8594;</button>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const slideCounter = document.getElementById('slideCounter');
+    const viewport = document.getElementById('viewport');
+    let currentSlide = 1;
+    const totalSlides = slides.length;
+
+    function updateCarousel(slideIndex) {
+      slides.forEach(slide => {
+        slide.classList.remove('active');
+        if (parseInt(slide.getAttribute('data-slide')) === slideIndex) {
+          slide.classList.add('active');
+        }
+      });
+
+      dots.forEach(dot => {
+        dot.classList.remove('active');
+        if (parseInt(dot.getAttribute('data-slide')) === slideIndex) {
+          dot.classList.add('active');
+        }
+      });
+
+      slideCounter.textContent = `Scene ${slideIndex} of ${totalSlides}`;
+      prevBtn.disabled = slideIndex === 1;
+      nextBtn.disabled = slideIndex === totalSlides;
+
+      // Scroll slide to top on slide change on mobile
+      const activeSlide = document.querySelector('.slide.active');
+      if (activeSlide) {
+        activeSlide.scrollTop = 0;
+      }
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentSlide > 1) {
+        currentSlide--;
+        updateCarousel(currentSlide);
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+        updateCarousel(currentSlide);
+      }
+    });
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', (e) => {
+        const slideIndex = parseInt(e.target.getAttribute('data-slide'));
+        currentSlide = slideIndex;
+        updateCarousel(currentSlide);
+      });
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' && currentSlide > 1) {
+        currentSlide--;
+        updateCarousel(currentSlide);
+      } else if (e.key === 'ArrowRight' && currentSlide < totalSlides) {
+        currentSlide++;
+        updateCarousel(currentSlide);
+      }
+    });
+
+    // Touch Swipe Gesture Support for Mobile Devices
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    viewport.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    viewport.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+      const swipeDistance = touchEndX - touchStartX;
+      const minSwipeDistance = 50; // Minimum px threshold for swipe
+
+      if (swipeDistance < -minSwipeDistance && currentSlide < totalSlides) {
+        // Swiped Left -> Next Slide
+        currentSlide++;
+        updateCarousel(currentSlide);
+      } else if (swipeDistance > minSwipeDistance && currentSlide > 1) {
+        // Swiped Right -> Previous Slide
+        currentSlide--;
+        updateCarousel(currentSlide);
+      }
+    }
+  </script>
+</body>
+</html>

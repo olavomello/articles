@@ -13,6 +13,7 @@ Personal technical articles portfolio by **Olavo Mello** ([linkedin.com/in/olavo
 3. [From Teams to Agents: The Changing Economics of Software Engineering](https://olavomello.github.io/articles/teams-to-agents/)
 4. [From Full Stack to AI-Native Engineer: What Actually Changes](https://olavomello.github.io/articles/full-stack-to-ai-native/)
 5. [If I Were Rebuilding Netflix's Engineering Org With AI](https://olavomello.github.io/articles/netflix-ai-native-engineering/)
+6. [AIS - AI as a System: The Architecture Behind AI Driven Software Development](https://olavomello.github.io/articles/ai-as-a-system/)
 
 ---
 
